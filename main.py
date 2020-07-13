@@ -1,40 +1,35 @@
-import sys, math
+class Graph:
 
-class Graph(): 
-
-	def __init__(self, vertices): 
+	def __init__(self, vertices):
 		self.V = vertices
-		self.graph = [[0 for column in range(vertices)] 
-					for row in range(vertices)] 
+		self.graph = []
 
-	def printSolution(self, dist): 
-		print ("Vertex \tDistance from Source")
-		for node in range(self.V): 
-			print (node, "\t", dist[node])
+	def addEdge(self, u, v, w):
+		self.graph.append([u, v, w])
 
-	def minDistance(self, dist, sptSet): 
-		min = 1000 
-
-		for v in range(self.V): 
-			if dist[v] < min and sptSet[v] == False: 
-				min = dist[v] 
-				min_index = v 
-
-		return min_index 
-
-	def dijkstra(self, src): 
-		dist = [1000] * self.V 
-		dist[src] = 0
-		sptSet = [False] * self.V 
-
+	def printArr(self, dist):
+		print("Vertex Distance from Source")
 		for i in range(self.V):
-			u = self.minDistance(dist, sptSet) 
-			sptSet[u] = True
-			for v in range(self.V): 
-				if self.graph[u][v] > 0 and sptSet[v] == False and dist[v] > dist[u] + self.graph[u][v]:
-						dist[v] = dist[u] + self.graph[u][v] 
+			print("{0}\t\t{1}".format(i, dist[i]))
+	
+	def BellmanFord(self, src):
 
-		self.printSolution(dist) 
+		dist = [float("Inf")] * self.V
+		dist[src] = 0
+
+		for _ in range(self.V - 1):
+
+			for u, v, w in self.graph:
+				if dist[u] != float("Inf") and dist[u] + w < dist[v]:
+						dist[v] = dist[u] + w
+
+		for u, v, w in self.graph:
+				if dist[u] != float("Inf") and dist[u] + w < dist[v]:
+						print("Graph contains negative weight cycle")
+						return
+		
+		self.printArr(dist)
+
 
 
 
@@ -46,15 +41,14 @@ for i in range(0, int(ln)):
     print("{count}:".format(count=i+1), end="")
     li.append(input())
 
-g = Graph(9) 
-g.graph =[[0, 4, 0, 0, 0, 0, 0, 8, 0], 
-        [4, 0, 8, 0, 0, 0, 0, 11, 0], 
-		[0, 8, 0, 7, 0, 4, 0, 0, 2], 
-		[0, 0, 7, 0, 9, 14, 0, 0, 0], 
-		[0, 0, 0, 9, 0, 10, 0, 0, 0], 
-		[0, 0, 4, 14, 10, 0, 2, 0, 0], 
-		[0, 0, 0, 0, 0, 2, 0, 1, 6], 
-		[8, 11, 0, 0, 0, 0, 1, 0, 7], 
-		[0, 0, 2, 0, 0, 0, 6, 7, 0]]
+g = Graph(5)
+g.addEdge(0, 1, -1)
+g.addEdge(0, 2, 4)
+g.addEdge(1, 2, 3)
+g.addEdge(1, 3, 2)
+g.addEdge(1, 4, 2)
+g.addEdge(3, 2, 5)
+g.addEdge(3, 1, 1)
+g.addEdge(4, 3, -3)
 
-g.dijkstra(0)
+g.BellmanFord(0)
