@@ -1,3 +1,5 @@
+import time
+
 class Graph:
 
 	def __init__(self, vertices):
@@ -9,6 +11,9 @@ class Graph:
 	def add_node_to_dic(self, val, i):
 		self.nodes_dic[val] = i
 
+	def get_network_adjs(self, net):
+		return self.nodes_dic[self.netwk_dic[net][0]], self.nodes_dic[self.netwk_dic[net][1]]
+	
 	def get_nodes_dic(self):
 		return self.nodes_dic
 
@@ -22,6 +27,17 @@ class Graph:
 		self.graph.append([self.nodes_dic[nd1], self.nodes_dic[nd2]])
 		# self.graph.append([u, v])
 		# self.graph.append([v, u])
+
+	def get_distances_from(self, net_selected):
+		nd1, nd2 = self.get_network_adjs(net_selected)
+		ls1 = self.BellmanFord(nd1)
+		ls2 = self.BellmanFord(nd2)
+		print(ls1)
+		print(ls2)
+		final_adj = []
+		for i in range(self.V):
+			final_adj.append(min(ls1[i], ls2[i]))
+		return final_adj
 
 	def printArr(self, dist):
 		print("Vertex Distance from Source")
@@ -38,11 +54,12 @@ class Graph:
 				if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
 						dist[v] = dist[u] + 1
 
-		# for u, v in self.graph:
-		# 		if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
-		# 				print("Graph contains negative weight cycle")
-		# 				return		
-		self.printArr(dist)
+		""" for u, v in self.graph:
+				if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
+						print("Graph contains negative weight cycle")
+						return """
+		# self.printArr(dist)
+		return dist
 
 
 # def print_distances():
@@ -107,6 +124,8 @@ for item in NK:
 	i+=1
 print("Pick a Network from above.\n>>", end="")
 net_selected=input()
+g.printArr(g.get_distances_from(net_selected))
+# print(g.get_distances_from(net_selected))
 # print(netwk_dic[net_selected])
 # print_distances()
 # print(min(g.BellmanFord(nodes_dic[netwk_dic[net_selected][0]]),g.BellmanFord(nodes_dic[netwk_dic[net_selected][1]])))
