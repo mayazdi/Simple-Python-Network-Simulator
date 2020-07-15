@@ -91,13 +91,28 @@ for i in range(0, int(ln)):
     g.addEdge(nd1, nd2)
     g.addNetwork(net_addr, nd1, nd2)
 
-print_seperator()
-
-i = 0
-NK = g.get_netwk_dic().keys()
-for item in NK:
-	print(str(i)+":"+item)
-	i+=1
-print("Pick a Network from above.\n>>", end="")
-net_selected=input()
-g.printArr(g.get_distances_from(net_selected))
+action = ["quit", "add", "remove", "report"]
+while True:
+	print_seperator()
+	print("Take one of the actions below:")
+	print(action)
+	print_seperator()
+	mode = input()
+	if mode==action[0]:
+		break
+	elif mode==action[1]:
+		print("add")
+	elif mode==action[2]:
+		print("remove a network")
+	elif mode==action[3]:
+		i = 0
+		NK = g.get_netwk_dic().keys()
+		for item in NK:
+			print(str(i)+":"+item)
+			i+=1
+		print("Pick a Network from above.\n>>", end="")
+		net_selected=input()
+		g.printArr(g.get_distances_from(net_selected))
+	else:
+		print("Action Not Valid!")
+	
