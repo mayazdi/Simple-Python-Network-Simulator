@@ -2,15 +2,18 @@ import time, threading
 from threading import Thread
 
 class Graph:
-	# quit_called = False
-
 	def __init__(self, vertices, ri):
 		self.refresh_interval = ri
 		self.V = vertices
+		self.network_ports = {}
 		self.nodes_dic = {}
 		self.netwk_dic = {}
 		self.graph = []
 	
+
+	def add_nn_port(self, key, port):
+		self.network_ports[key] = port
+
 	def add_node_to_dic(self, val, i):
 		self.nodes_dic[val] = i
 
@@ -48,8 +51,6 @@ class Graph:
 	def call_bellmanford(self):
 		ticker = threading.Event()
 		while not ticker.wait(self.refresh_interval):
-			# if self.quit_called:
-			# 	break
 			g.BellmanFord(0)
 
 	def BellmanFord(self, src):
@@ -62,8 +63,6 @@ class Graph:
 				if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
 						dist[v] = dist[u] + 1
 
-		# self.printArr(dist)
-		# print("BF called")
 		return dist
 
 
@@ -97,21 +96,24 @@ else:
 print("names: " + str(nodes))
 print(g.get_nodes_dic())
 print_seperator()
-print("Enter the graph topology in the following format:\nNode1 Node2 (XXX.XXX.XXX.XXX)\n")
-for i in range(0, int(ln)):
+print("Networks Count:", end="")
+net_len = input()
+print("Enter the graph topology in the following format:\nNode1 Node2 PN1 PN2 (XXX.XXX.XXX.XXX)\n")
+for i in range(0, int(net_len)):
     print("{count}:".format(count=i+1), end="")
     edge = input()
-    nd1, nd2, net_addr = edge.split(' ')
+    nd1, nd2, pn1, pn2, net_addr = edge.split(' ')
+    g.add_nn_port((nd1, net_addr), int(pn1))
+    g.add_nn_port((nd2, net_addr), int(pn2))
     g.addEdge(nd1, nd2)
     g.addNetwork(net_addr, nd1, nd2)
 
 
-# threading.Timer(10, self.BellmanFord(src)).start()
 t2 = Thread(target=g.call_bellmanford)
 t2.setDaemon(True)
 t2.start()
 
-action = ["quit", "add", "remove", "report", "change interval"]
+action = ["quit", "add", "remove", "report", "change interval", "report router"]
 while True:
 	print_seperator()
 	print("Take one of the actions below:")
@@ -119,7 +121,6 @@ while True:
 	print_seperator()
 	mode = input()
 	if mode==action[0]:
-		# g.quit_called = True
 		break
 	elif mode==action[1]:
 		edge = input()
@@ -137,10 +138,14 @@ while True:
 		print("Pick a Network from above.\n>>", end="")
 		try:
 			net_selected=input()
+			# The exact same network
 			g.printArr(g.get_distances_from(net_selected))
+			# g.printArr(g.get_distances_from(net_selected))
 		except:
 			print("Couldn't investigate that network")
 	elif mode==action[4]:
-		g.refresh_interval= int(input())
+		g.refresh_interval=int(input())
+	elif mode==action[5]:
+		pass
 	else:
 		print("Action Not Valid!")	
