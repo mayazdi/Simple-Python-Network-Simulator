@@ -25,15 +25,12 @@ class Graph:
 	
 	def addEdge(self, nd1, nd2):
 		self.graph.append([self.nodes_dic[nd1], self.nodes_dic[nd2]])
-		# self.graph.append([u, v])
-		# self.graph.append([v, u])
+		self.graph.append([self.nodes_dic[nd2], self.nodes_dic[nd1]])
 
 	def get_distances_from(self, net_selected):
 		nd1, nd2 = self.get_network_adjs(net_selected)
 		ls1 = self.BellmanFord(nd1)
 		ls2 = self.BellmanFord(nd2)
-		print(ls1)
-		print(ls2)
 		final_adj = []
 		for i in range(self.V):
 			final_adj.append(min(ls1[i], ls2[i]))
