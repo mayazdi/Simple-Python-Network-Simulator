@@ -19,34 +19,36 @@ To run:
 
 `python main.py`
 
-You're asked to enter network size. i.e. `5`
+You're asked to enter network size. i.e. `5` (in secs.)
 
-<!-- ### As Client
 
-`python client.py`
+Then you should enter network properties. i.e.
 
-After running the client, you can send calculation requests in the following format:
+First the graph size. then the name of the routers and topology of Networks.
+As default the graph names will be R_0 to R_n-1 (n: the graph size). Or you can choose your names instead.
 
-`$ Add $ 5 $ 7 $`
+The topology of network is in this form `Router_name1 Router_name2 Network_Address`
 
-* Add
-* Subtract
-* Divide
-* Multiply
+### Report
 
-And,
+After finishing the initialization, you can get report of the distances from one specific network to the others by choosing the `report` mode, and the network name.
 
-`$ Sin $ 6 $`
+### Add
 
-* Tan
-* Sin
-* Cot
-* Cos
+You can add new networks by selecting this mode.
 
-Result will be returned in the following format:
+### Remove
 
-`$ Time $ Result $`
+Also Removing a network is possbile.
 
-which:
-* **Time** is the exec. time
-* **Result** is the result of calcuation -->
+### Change Interval
+
+The Bellmanfordd algorithm runs peridocally to cover possible changes (Like real networks). This value is asked in the first place, but it can be changed using this mode.
+
+### Quit
+
+And you can close the simulation by sending quit order.
+
+## Algorithm
+
+networks with the toplogy explained by the user will run Bellmanford algorithm to find the shortest path through the routers. This algorithm runs periodically to update in coordination with the possible changes each `refresh_interval` seconds.
