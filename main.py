@@ -51,20 +51,13 @@ class Graph:
 				if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
 						dist[v] = dist[u] + 1
 
-		""" for u, v in self.graph:
-				if dist[u] != float("Inf") and dist[u] + 1 < dist[v]:
-						print("Graph contains negative weight cycle")
-						return """
 		# self.printArr(dist)
 		return dist
 
 
-# def print_distances():
-
 
 def print_seperator():
 	print("----------------------------")
-
 
 
 print("Enter the graph Size:")
@@ -95,25 +88,11 @@ for i in range(0, int(ln)):
     print("{count}:".format(count=i+1), end="")
     edge = input()
     nd1, nd2, net_addr = edge.split(' ')
-    # g.addEdge(nodes_dic[nd1], nodes_dic[nd2])
     g.addEdge(nd1, nd2)
     g.addNetwork(net_addr, nd1, nd2)
-    # netwk_dic[net_addr] = (nd1, nd2)
 
 print_seperator()
 
-#do all the routing things
-
-""" 
-g = Graph(5)
-g.addEdge(0, 1)
-g.addEdge(2, 1)
-g.addEdge(3, 1)
-g.addEdge(3, 4)
-g.addEdge(2, 3)
-
-g.BellmanFord(0)
-"""
 i = 0
 NK = g.get_netwk_dic().keys()
 for item in NK:
@@ -122,7 +101,3 @@ for item in NK:
 print("Pick a Network from above.\n>>", end="")
 net_selected=input()
 g.printArr(g.get_distances_from(net_selected))
-# print(g.get_distances_from(net_selected))
-# print(netwk_dic[net_selected])
-# print_distances()
-# print(min(g.BellmanFord(nodes_dic[netwk_dic[net_selected][0]]),g.BellmanFord(nodes_dic[netwk_dic[net_selected][1]])))
