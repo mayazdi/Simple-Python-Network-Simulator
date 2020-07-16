@@ -57,10 +57,14 @@ class Graph:
 	def port_distance_from_network(self, net, nd):
 		adj_nets = self.node_to_network[nd]
 		adj_routers = []
-		for net in adj_nets:
-			nd1, nd2 = self.netwk_dic[net]
-			adj_routers.append(self.nodes_dic[nd1])
-			adj_routers.append(self.nodes_dic[nd2])
+		for nt in adj_nets:
+			nd1, nd2 = self.netwk_dic[nt]
+			NND1 = self.nodes_dic[nd1]
+			NND2 = self.nodes_dic[nd2]
+			if NND1 not in adj_routers and NND1 != nd:
+				adj_routers.append(NND1)
+			if NND2 not in adj_routers and NND2 != nd:
+				adj_routers.append(NND2)
 		li = self.get_distances_from_network(net)
 		minimum = float("Inf")
 		selected_router = None
@@ -70,15 +74,17 @@ class Graph:
 				selected_router = i
 		intersection_network = set(self.node_to_network[selected_router]) & set(self.node_to_network[nd])
 		
-		return minimum, self.network_ports[nd, intersection_network]
-		#maybe min+1
+		return 1+minimum, self.network_ports[nd, intersection_network.pop()]
 	
 	def get_distances_from_node(self, router_name):
 		node_selected = self.nodes_dic[router_name]
 		final_list = []
 		nets = self.get_netwk_dic().keys()
 		for net in nets:
-			final_list.append([net, self.port_distance_from_network(net, node_selected)])
+			adj_nets = self.node_to_network[node_selected]
+			if net in adj_nets:
+				final_list.append([net, (0, self.network_ports[node_selected, net])])
+			else: final_list.append([net, self.port_distance_from_network(net, node_selected)])
 		return final_list
 
 	def printArr(self, dist):
@@ -142,8 +148,8 @@ for i in range(0, int(net_len)):
     print("{count}:".format(count=i+1), end="")
     edge = input()
     nd1, nd2, pn1, pn2, net_addr = edge.split(' ')
-    g.add_nn_port((nd1, net_addr), int(pn1))
-    g.add_nn_port((nd2, net_addr), int(pn2))
+    g.add_nn_port((g.nodes_dic[nd1], net_addr), int(pn1))
+    g.add_nn_port((g.nodes_dic[nd2], net_addr), int(pn2))
     g.addEdge(nd1, nd2)
     g.addNetwork(net_addr, nd1, nd2)
     g.addNode(net_addr, nd1, nd2)
@@ -192,11 +198,11 @@ while True:
 			print(str(i)+":"+item)
 			i+=1
 		print("Pick a Router from above.\n>>", end="")
-		try:
-			router_selected=input()
-			print(g.get_distances_from_node(router_selected))
-		except:
-			print("Couldn't investigate that Router")
+		# try:
+		router_selected=input()
+		print(g.get_distances_from_node(router_selected))
+		# except:
+		# 	print("Couldn't investigate that Router")
 		
 	else:
 		print("Action Not Valid!")	
