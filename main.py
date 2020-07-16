@@ -8,8 +8,8 @@ class Graph:
 		self.network_ports = {}
 		self.nodes_dic = {}
 		self.netwk_dic = {}
-		self.graph = []
-	
+		self.node_to_network = {}
+		self.graph = []	
 
 	def add_nn_port(self, key, port):
 		self.network_ports[key] = port
@@ -26,6 +26,18 @@ class Graph:
 	def get_netwk_dic(self):
 		return self.netwk_dic
 
+	def addNode(self, net_addr, nd1, nd2):
+		try:
+			self.node_to_network[self.nodes_dic[nd1]].append(net_addr)
+		except:
+			self.node_to_network[self.nodes_dic[nd1]] = []
+			self.node_to_network[self.nodes_dic[nd1]].append(net_addr)
+		try:
+			self.node_to_network[self.nodes_dic[nd2]].append(net_addr)
+		except:
+			self.node_to_network[self.nodes_dic[nd2]] = []
+			self.node_to_network[self.nodes_dic[nd2]].append(net_addr)
+	
 	def addNetwork(self, net_addr, nd1, nd2):
 		self.netwk_dic[net_addr] = (nd1, nd2)
 	
@@ -33,7 +45,7 @@ class Graph:
 		self.graph.append([self.nodes_dic[nd1], self.nodes_dic[nd2]])
 		self.graph.append([self.nodes_dic[nd2], self.nodes_dic[nd1]])
 
-	def get_distances_from(self, net_selected):
+	def get_distances_from_network(self, net_selected):
 		nd1, nd2 = self.get_network_adjs(net_selected)
 		ls1 = self.BellmanFord(nd1)
 		ls2 = self.BellmanFord(nd2)
@@ -41,6 +53,33 @@ class Graph:
 		for i in range(self.V):
 			final_adj.append(min(ls1[i], ls2[i]))
 		return final_adj
+
+	def port_distance_from_network(self, net, nd):
+		adj_nets = self.node_to_network[nd]
+		adj_routers = []
+		for net in adj_nets:
+			nd1, nd2 = self.netwk_dic[net]
+			adj_routers.append(self.nodes_dic[nd1])
+			adj_routers.append(self.nodes_dic[nd2])
+		li = self.get_distances_from_network(net)
+		minimum = float("Inf")
+		selected_router = None
+		for i in range(0, len(li)):
+			if i in adj_routers and minimum> li[i]:
+				minimum = li[i]
+				selected_router = i
+		intersection_network = set(self.node_to_network[selected_router]) & set(self.node_to_network[nd])
+		
+		return minimum, self.network_ports[nd, intersection_network]
+		#maybe min+1
+	
+	def get_distances_from_node(self, router_name):
+		node_selected = self.nodes_dic[router_name]
+		final_list = []
+		nets = self.get_netwk_dic().keys()
+		for net in nets:
+			final_list.append([net, self.port_distance_from_network(net, node_selected)])
+		return final_list
 
 	def printArr(self, dist):
 		print("Vertex Distance from Source")
@@ -107,6 +146,7 @@ for i in range(0, int(net_len)):
     g.add_nn_port((nd2, net_addr), int(pn2))
     g.addEdge(nd1, nd2)
     g.addNetwork(net_addr, nd1, nd2)
+    g.addNode(net_addr, nd1, nd2)
 
 
 t2 = Thread(target=g.call_bellmanford)
@@ -139,13 +179,24 @@ while True:
 		try:
 			net_selected=input()
 			# The exact same network
-			g.printArr(g.get_distances_from(net_selected))
+			g.printArr(g.get_distances_from_network(net_selected))
 			# g.printArr(g.get_distances_from(net_selected))
 		except:
 			print("Couldn't investigate that network")
 	elif mode==action[4]:
 		g.refresh_interval=int(input())
 	elif mode==action[5]:
-		pass
+		i = 0
+		RK = g.get_nodes_dic().keys()
+		for item in RK:
+			print(str(i)+":"+item)
+			i+=1
+		print("Pick a Router from above.\n>>", end="")
+		try:
+			router_selected=input()
+			print(g.get_distances_from_node(router_selected))
+		except:
+			print("Couldn't investigate that Router")
+		
 	else:
 		print("Action Not Valid!")	
