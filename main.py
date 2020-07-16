@@ -89,10 +89,10 @@ class Graph:
                 final_list.append([net, self.port_distance_from_network(net, node_selected)])
         return final_list
 
-    def print_arr(self, dist):
+    def print_arr(self, dist, node_to_router_dic):
         print("Vertex Distance from Source")
         for i in range(self.V):
-            print("{0}\t\t{1}".format(i, dist[i]))
+            print("{0}\t\t{1}".format(node_to_router_dic[i], dist[i]))
 
     def call_bellman_ford(self):
         ticker = threading.Event()
@@ -122,6 +122,7 @@ print("Enter the graph Size:")
 ln = input()
 g = Graph(int(ln), int(ref_interval))
 nodes = []
+node_to_router_dic = {}
 
 print("Default Names(R0, R1, ..., R(n-1))?[Y/n]")
 default_names = input()
@@ -130,6 +131,7 @@ if default_names == "Y" or default_names == "y" or default_names == "Yes" or def
         val = "R" + str(i)
         nodes.append(val)
         g.add_node_to_dic(val, i)
+        node_to_router_dic[i] = val
 else:
     print("Enter the values then:")
     for i in range(int(ln)):
@@ -137,6 +139,7 @@ else:
         val = input()
         nodes.append(val)
         g.add_node_to_dic(val, i)
+        node_to_router_dic[i] = val
 
 print("names: " + str(nodes))
 print(g.get_nodes_dic())
@@ -169,10 +172,13 @@ while True:
         if mode == action[0]:
             break
         elif mode == action[1]:
-            edge = input()
-            network_dic1, network_dic2, net_addr = edge.split(' ')
+            edge = input()    
+            network_dic1, network_dic2, pn1, pn2, net_addr = edge.split(' ')
+            g.add_network_node_port((g.nodes_dic[network_dic1], net_addr), int(pn1))
+            g.add_network_node_port((g.nodes_dic[network_dic2], net_addr), int(pn2))
             g.add_edge(network_dic1, network_dic2)
             g.add_network(net_addr, network_dic1, network_dic2)
+            g.add_node(net_addr, network_dic1, network_dic2)
         elif mode == action[2]:
             i = 0
             NK = g.get_network_dic().keys()
@@ -183,7 +189,7 @@ while True:
             try:
                 net_selected = input()
                 # The exact same network
-                g.print_arr(g.get_distances_from_network(net_selected))
+                g.print_arr(g.get_distances_from_network(net_selected), node_to_router_dic)
             # g.print_arr(g.get_distances_from(net_selected))
             except:
                 print("Couldn't investigate that network")
