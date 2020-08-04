@@ -172,13 +172,16 @@ while True:
         if mode == action[0]:
             break
         elif mode == action[1]:
-            edge = input()    
-            network_dic1, network_dic2, pn1, pn2, net_addr = edge.split(' ')
-            g.add_network_node_port((g.nodes_dic[network_dic1], net_addr), int(pn1))
-            g.add_network_node_port((g.nodes_dic[network_dic2], net_addr), int(pn2))
-            g.add_edge(network_dic1, network_dic2)
-            g.add_network(net_addr, network_dic1, network_dic2)
-            g.add_node(net_addr, network_dic1, network_dic2)
+            try:
+                edge = input()
+                network_dic1, network_dic2, pn1, pn2, net_addr = edge.split(' ')
+                g.add_network_node_port((g.nodes_dic[network_dic1], net_addr), int(pn1))
+                g.add_network_node_port((g.nodes_dic[network_dic2], net_addr), int(pn2))
+                g.add_edge(network_dic1, network_dic2)
+                g.add_network(net_addr, network_dic1, network_dic2)
+                g.add_node(net_addr, network_dic1, network_dic2)
+            except:
+                print("Failed to add!")
         elif mode == action[2]:
             i = 0
             NK = g.get_network_dic().keys()
